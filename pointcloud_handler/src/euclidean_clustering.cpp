@@ -29,11 +29,7 @@ class Cluster
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
             pcl::fromROSMsg(ros_input, *cloud_filtered);
-            
-            sensor_msgs::PointCloud2 ros_output;
-            pcl::toROSMsg(*cloud_filtered, ros_output);
-            ros_output.header.frame_id = "base_scan";
-            cloud_pub.publish(ros_output);
+    
 
 
             // Set segmentation object
@@ -42,7 +38,7 @@ class Cluster
             // pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
             // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
 
-            // pcl::PCDWriter writer;
+            pcl::PCDWriter writer;
 
             // seg.setOptimizeCoefficients (true);
             // seg.setModelType (pcl::SACMODEL_PLANE);
@@ -50,9 +46,9 @@ class Cluster
             // seg.setMaxIterations (100);
             // seg.setDistanceThreshold (0.02);
 
-            // int i=0, nr_points = (int) cloud_filtered->points.size ();
-            // while (cloud_filtered->points.size () > 0.3 * nr_points)
-            // {
+            int i=0, nr_points = (int) cloud_filtered->points.size ();
+            while (cloud_filtered->points.size () > 0.3 * nr_points)
+            {
                 // // Segment the largest planar component from the remaining cloud
                 // seg.setInputCloud (cloud_filtered);
                 // seg.segment (*inliers, *coefficients);
@@ -76,35 +72,35 @@ class Cluster
                 // extract.filter (*cloud_rest);
                 // *cloud_filtered = *cloud_rest;
 
-                // pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-                // tree->setInputCloud (cloud_filtered);
+                pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+                tree->setInputCloud (cloud_filtered);
 
-                // std::vector<pcl::PointIndices> cluster_indices;
-                // pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-                // ec.setClusterTolerance (0.02); // 2cm
-                // ec.setMinClusterSize (5);
-                // ec.setMaxClusterSize (25000);
-                // ec.setSearchMethod (tree);
-                // ec.setInputCloud (cloud_filtered);
-                // ec.extract (cluster_indices);
+                std::vector<pcl::PointIndices> cluster_indices;
+                pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+                ec.setClusterTolerance (0.05); // 2cm
+                ec.setMinClusterSize (5);
+                ec.setMaxClusterSize (25000);
+                ec.setSearchMethod (tree);
+                ec.setInputCloud (cloud_filtered);
+                ec.extract (cluster_indices);
 
 
-            //     int j = 0;
-            //     for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-            //     {
-            //         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-            //         for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-            //             cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
-            //         cloud_cluster->width = cloud_cluster->points.size ();
-            //         cloud_cluster->height = 1;
-            //         cloud_cluster->is_dense = true;
+                int j = 0;
+                for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+                {
+                    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+                    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
+                        cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
+                    cloud_cluster->width = cloud_cluster->points.size ();
+                    cloud_cluster->height = 1;
+                    cloud_cluster->is_dense = true;
 
-            //         std::stringstream ss;
-            //         ss << "cloud_cluster_" << j << ".pcd";
-            //         writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
-            //         j++;
-            //     }
-            // }
+                    std::stringstream ss;
+                    ss << "cloud_cluster_" << j << ".pcd";
+                    writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
+                    j++;
+                }
+            }
 
             // publish the clustered PointCloud
             // sensor_msgs::PointCloud2 ros_cloud;
