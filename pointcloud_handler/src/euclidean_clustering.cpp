@@ -5,11 +5,6 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 
-#include <sensor_msgs/LaserScan.h>
-#include "laser_geometry/laser_geometry.h"
-#include <pcl/filters/passthrough.h>
-#include <string>
-
 class Cluster
 {
     public:
