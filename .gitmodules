@@ -1,3 +1,6 @@
 [submodule "laser_geometry"]
 	path = laser_geometry
 	url = https://github.com/ozangungortuhh/laser_geometry.git
+[submodule "turtlebot3"]
+	path = turtlebot3
+	url = https://github.com/ozangungortuhh/turtlebot3.git
