@@ -55,3 +55,6 @@ target_link_libraries(filter_cloud ${catkin_LIBRARIES})
 
 add_executable(laser_to_cloud src/laser_to_cloud.cpp)
 target_link_libraries(laser_to_cloud ${catkin_LIBRARIES})
+
+add_executable(euclidean_clustering src/euclidean_clustering.cpp)
+target_link_libraries(euclidean_clustering ${catkin_LIBRARIES})
