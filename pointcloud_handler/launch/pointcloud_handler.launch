@@ -1,7 +1,0 @@
-<launch>
-  <!-- <node pkg="pointcloud_handler" type="pcl_publisher" name="pointcloud_publisher" output="screen"/> -->
-  <!-- <node pkg="pointcloud_handler" type="cloud_publisher" name="cloud_publisher" output="screen"/> -->
-  <!-- <node pkg="pointcloud_handler" type="filter_cloud" name="filter_cloud" output="screen"/> -->
-  <node pkg="pointcloud_handler" type="laser_to_cloud" name="laser_to_cloud" output="screen"/>
-</launch>
-

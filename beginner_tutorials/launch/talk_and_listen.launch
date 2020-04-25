@@ -1,4 +1,0 @@
-<launch>
-    <node name="talker_node" pkg="beginner_tutorials" type="talker" />
-    <node name="listener_node" pkg="beginner_tutorials" type="listener" />
-</launch>
