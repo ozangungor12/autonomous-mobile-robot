@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/o.guengoer/catkin_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/o.guengoer/catkin_ws/src/beginner_tutorials/include/**",
+        "/home/o.guengoer/catkin_ws/src/image_handler/include/**",
+        "/home/o.guengoer/catkin_ws/src/image_transport_tutorial/include/**",
+        "/home/o.guengoer/catkin_ws/src/pointcloud_tutorial/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ]
+}
