@@ -10,3 +10,6 @@
 [submodule "turtlebot3_msgs"]
 	path = turtlebot3_msgs
 	url = https://github.com/ozangungortuhh/turtlebot3_msgs.git
+[submodule "turtlebot"]
+	path = turtlebot3
+	url = https://github.com/ozangungortuhh/turtlebot3.git
