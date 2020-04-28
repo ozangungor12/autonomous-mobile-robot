@@ -58,6 +58,14 @@ class Cluster
             std::vector<pcl::PointIndices>::const_iterator it;
             std::vector<int>::const_iterator pit;
 
+            // Create a marker
+            visualization_msgs::Marker marker;
+            marker.header.frame_id = "/base_footprint";
+            marker.header.stamp = ros::Time();
+            marker.type = visualization_msgs::Marker::CUBE;
+            marker.action = visualization_msgs::Marker::ADD;
+            marker.id = 0;
+
             int cluster_count = 1;
             for(it = cluster_indices.begin(); it != cluster_indices.end(); ++it) 
             {
@@ -77,31 +85,28 @@ class Cluster
                 pcl::PointXYZ minPt, maxPt;
                 pcl::getMinMax3D(*cloud_cluster, minPt, maxPt);
 
-                std::cout << "Size: " << cloud_cluster->width << " " << "Min: " << minPt << " "  << "Max: " << maxPt << std::endl;
+                std::cout << "Size: " << cloud_cluster->width << " " << "Max_X: " << maxPt.x << " "  << "Max_Y: " << maxPt.y << std::endl;
 
-                // Publish the markers
-
-                visualization_msgs::Marker marker;
-                marker.header.frame_id = "/base_footprint";
-                marker.header.stamp = ros::Time();
-                marker.type = visualization_msgs::Marker::CUBE;
-                marker.action = visualization_msgs::Marker::ADD;
-                marker.id = cluster_count;
-                marker.pose.position.x = 1;
-                marker.pose.position.y = 1;
-                marker.pose.position.z = 0;
-                marker.pose.orientation.x = 0.0;
-                marker.pose.orientation.y = 0.0;
-                marker.pose.orientation.z = 0.0;
-                marker.pose.orientation.w = 1.0;
-                marker.scale.x = 1.0;
-                marker.scale.y = 1.0;
-                marker.scale.z = 0.0;
-                marker.color.a = 1.0; // Don't forget to set the alpha!
-                marker.color.r = 0.0;
-                marker.color.g = 1.0;
-                marker.color.b = 0.0;
-
+                // Publish the marker
+                if (maxPt.x < 1.0 && maxPt.y < 1.0)
+                {
+                    marker.pose.position.x = (maxPt.x+minPt.x)/2;
+                    marker.pose.position.y = (maxPt.y+minPt.y)/2;
+                    marker.pose.position.z = 0;
+                    marker.pose.orientation.x = 0.0;
+                    marker.pose.orientation.y = 0.0;
+                    marker.pose.orientation.z = 0.0;
+                    marker.pose.orientation.w = 1.0;
+                    marker.scale.x = (maxPt.x - minPt.x) + 0.2;
+                    marker.scale.y = (maxPt.y - minPt.y) + 0.2;
+                    marker.scale.z = 0.0;
+                    marker.color.a = 1.0; // Don't forget to set the alpha!
+                    marker.color.r = 0.0;
+                    marker.color.g = 1.0;
+                    marker.color.b = 0.0;
+                    
+                    std::cout << "Scale X: " << marker.scale.x << " " << "Scale Y: " << marker.scale.y << std::endl;
+                }
                 //Merge current clusters to a single PointCloud to publish
                 *clustered_cloud += *cloud_cluster;
                 
@@ -113,11 +118,13 @@ class Cluster
                 // Increase the cluster counter
                 ++cluster_count;
 
-                boxes_pub.publish(marker);
             }      
 
-            std::cout << "Number of clusters: " << cluster_count << std::endl;
+            // std::cout << "Number of clusters: " << cluster_count << std::endl;
             
+            // Publish the marker
+            boxes_pub.publish(marker);
+
             // Publish the clusters
             pcl::toROSMsg (*clustered_cloud , *clusters);
             clusters->header.frame_id = "/base_scan";
