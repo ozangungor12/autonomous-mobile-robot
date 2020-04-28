@@ -3,5 +3,6 @@
   <!-- <node pkg="pointcloud_handler" type="cloud_publisher" name="cloud_publisher" output="screen"/> -->
   <!-- <node pkg="pointcloud_handler" type="filter_cloud" name="filter_cloud" output="screen"/> -->
   <node pkg="pointcloud_handler" type="laser_to_cloud" name="laser_to_cloud" output="screen"/>
+  <!-- <node pkg="pointcloud_handler" type="euclidean_clustering" name="clustering" output="screen"/> -->
 </launch>
 
