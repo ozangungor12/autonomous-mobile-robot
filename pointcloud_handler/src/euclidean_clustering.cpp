@@ -10,6 +10,7 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
+#include <pcl/common/common.h>
 // iostream
 #include <iostream>
 
@@ -67,6 +68,12 @@ class Cluster
                 cloud_cluster->width = cloud_cluster->points.size ();
                 cloud_cluster->height = 1;
                 cloud_cluster->is_dense = true;
+
+                // Find min an max of cluster points
+                pcl::PointXYZ minPt, maxPt;
+                pcl::getMinMax3D(*cloud_cluster, minPt, maxPt);
+
+                std::cout << "Size: " << cloud_cluster->width << " " << "Min: " << minPt << " "  << "Max: " << maxPt << std::endl;
 
                 //Merge current clusters to a single PointCloud to publish
                 *clustered_cloud += *cloud_cluster;
