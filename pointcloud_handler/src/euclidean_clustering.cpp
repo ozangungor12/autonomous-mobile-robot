@@ -82,13 +82,14 @@ class Cluster
                 cloud_cluster->height = 1;
                 cloud_cluster->is_dense = true;
 
-                // Find min an max of cluster points
+                // Find min and max of cluster points to fit a box around them
                 pcl::PointXYZ minPt, maxPt;
                 pcl::getMinMax3D(*cloud_cluster, minPt, maxPt);
 
-                std::cout << "Size: " << cloud_cluster->width << " " << "Max_X: " << maxPt.x << " "  << "Max_Y: " << maxPt.y << std::endl;
+                // Print cluster size 
+                std::cout << "Size: " << cloud_cluster->width << std::endl;
 
-                // Publish the marker
+                // Modify the marker
                 marker.id = cluster_count;
                 marker.pose.position.x = (maxPt.x+minPt.x)/2;
                 marker.pose.position.y = (maxPt.y+minPt.y)/2;
@@ -104,8 +105,10 @@ class Cluster
                 marker.color.r = 0.0;
                 marker.color.g = 1.0;
                 marker.color.b = 0.0;
-
+                
+                // Add marker to markerArray
                 markerArray.markers.push_back(marker);                                 
+                
                 //Merge current clusters to a single PointCloud to publish
                 *clustered_cloud += *cloud_cluster;
                 
@@ -118,8 +121,6 @@ class Cluster
                 ++cluster_count;
 
             }      
-
-            // std::cout << "Number of clusters: " << cluster_count << std::endl;
             
             // Publish the marker
             boxes_pub.publish(markerArray);
