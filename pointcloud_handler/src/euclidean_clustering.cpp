@@ -15,6 +15,7 @@
 #include <iostream>
 // markers
 #include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 
 class Cluster
 {
@@ -26,7 +27,7 @@ class Cluster
             // Publish clustered PointCloud2
             cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clustered_cloud", 1);
             // Publish cluster boxes 
-            boxes_pub = nh.advertise<visualization_msgs::Marker>("/cluster_boxes", 0 );
+            boxes_pub = nh.advertise<visualization_msgs::MarkerArray>("/cluster_boxes", 0 );
         }
 
         void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& input)
@@ -58,17 +59,17 @@ class Cluster
             std::vector<pcl::PointIndices>::const_iterator it;
             std::vector<int>::const_iterator pit;
 
-            // Create a marker
+            // Create markerArray and marker objects
+            visualization_msgs::MarkerArray markerArray;
             visualization_msgs::Marker marker;
             marker.header.frame_id = "/base_footprint";
             marker.header.stamp = ros::Time();
             marker.type = visualization_msgs::Marker::CUBE;
             marker.action = visualization_msgs::Marker::ADD;
-            marker.id = 0;
 
-            int cluster_count = 1;
+            int cluster_count = 0;
             for(it = cluster_indices.begin(); it != cluster_indices.end(); ++it) 
-            {
+            {   
                 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
                 for(pit = it->indices.begin(); pit != it->indices.end(); pit++) 
                 {
@@ -88,25 +89,23 @@ class Cluster
                 std::cout << "Size: " << cloud_cluster->width << " " << "Max_X: " << maxPt.x << " "  << "Max_Y: " << maxPt.y << std::endl;
 
                 // Publish the marker
-                if (maxPt.x < 1.0 && maxPt.y < 1.0)
-                {
-                    marker.pose.position.x = (maxPt.x+minPt.x)/2;
-                    marker.pose.position.y = (maxPt.y+minPt.y)/2;
-                    marker.pose.position.z = 0;
-                    marker.pose.orientation.x = 0.0;
-                    marker.pose.orientation.y = 0.0;
-                    marker.pose.orientation.z = 0.0;
-                    marker.pose.orientation.w = 1.0;
-                    marker.scale.x = (maxPt.x - minPt.x) + 0.2;
-                    marker.scale.y = (maxPt.y - minPt.y) + 0.2;
-                    marker.scale.z = 0.0;
-                    marker.color.a = 1.0; // Don't forget to set the alpha!
-                    marker.color.r = 0.0;
-                    marker.color.g = 1.0;
-                    marker.color.b = 0.0;
-                    
-                    std::cout << "Scale X: " << marker.scale.x << " " << "Scale Y: " << marker.scale.y << std::endl;
-                }
+                marker.id = cluster_count;
+                marker.pose.position.x = (maxPt.x+minPt.x)/2;
+                marker.pose.position.y = (maxPt.y+minPt.y)/2;
+                marker.pose.position.z = 0;
+                marker.pose.orientation.x = 0.0;
+                marker.pose.orientation.y = 0.0;
+                marker.pose.orientation.z = 0.0;
+                marker.pose.orientation.w = 1.0;
+                marker.scale.x = (maxPt.x - minPt.x) + 0.2;
+                marker.scale.y = (maxPt.y - minPt.y) + 0.2;
+                marker.scale.z = 0.0;
+                marker.color.a = 1.0; // Don't forget to set the alpha!
+                marker.color.r = 0.0;
+                marker.color.g = 1.0;
+                marker.color.b = 0.0;
+
+                markerArray.markers.push_back(marker);                                 
                 //Merge current clusters to a single PointCloud to publish
                 *clustered_cloud += *cloud_cluster;
                 
@@ -123,7 +122,7 @@ class Cluster
             // std::cout << "Number of clusters: " << cluster_count << std::endl;
             
             // Publish the marker
-            boxes_pub.publish(marker);
+            boxes_pub.publish(markerArray);
 
             // Publish the clusters
             pcl::toROSMsg (*clustered_cloud , *clusters);
