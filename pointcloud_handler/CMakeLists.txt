@@ -69,3 +69,6 @@ target_link_libraries(laser_to_cloud ${catkin_LIBRARIES})
 
 add_executable(euclidean_clustering src/euclidean_clustering.cpp)
 target_link_libraries(euclidean_clustering ${catkin_LIBRARIES})
+
+add_executable(ransac_model src/ransac_model.cpp)
+target_link_libraries(ransac_model ${catkin_LIBRARIES})
