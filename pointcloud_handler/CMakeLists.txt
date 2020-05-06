@@ -14,8 +14,19 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   laser_geometry
+  message_generation
 )
 
+add_message_files(
+  FILES
+  Cluster.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  sensor_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -27,10 +38,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES pointcloud_handler
-#  CATKIN_DEPENDS pcl_conversions pcl_ros roscpp rospy sensor_msgs
-#  DEPENDS system_lib
+  #INCLUDE_DIRS include
+  #LIBRARIES pointcloud_handler
+  CATKIN_DEPENDS pcl_conversions pcl_ros roscpp rospy sensor_msgs message_runtime
+  #DEPENDS system_lib
 )
 
 ###########
@@ -55,3 +66,12 @@ target_link_libraries(filter_cloud ${catkin_LIBRARIES})
 
 add_executable(laser_to_cloud src/laser_to_cloud.cpp)
 target_link_libraries(laser_to_cloud ${catkin_LIBRARIES})
+
+add_executable(euclidean_clustering src/euclidean_clustering.cpp)
+target_link_libraries(euclidean_clustering ${catkin_LIBRARIES})
+
+add_executable(ransac_model src/ransac_model.cpp)
+target_link_libraries(ransac_model ${catkin_LIBRARIES})
+
+add_executable(laser_to_pointcloud src/laser_to_pointcloud.cpp)
+target_link_libraries(laser_to_pointcloud ${catkin_LIBRARIES})

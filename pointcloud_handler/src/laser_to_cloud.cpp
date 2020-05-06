@@ -35,8 +35,8 @@ class LaserToCloud
             pcl::fromROSMsg(ros_cloud, *pcl_cloud);
 
             // Apply filters to PointXYZ cloud
-            filterPointCloud(pcl_cloud, "x", 2.0);
-            filterPointCloud(pcl_cloud, "y", 2.0);
+            // filterPointCloud(pcl_cloud, "x", 5.0);
+            // filterPointCloud(pcl_cloud, "y", 2.0);
 
             // Convert PointXYZ to PointCloud2
             pcl::toROSMsg(*pcl_cloud, ros_cloud);
