@@ -206,3 +206,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(laser_converter src/laser_converter.cpp)
+target_link_libraries(laser_converter ${catkin_LIBRARIES})

@@ -68,7 +68,7 @@
   <exec_depend>libpcl-all</exec_depend>
   <build_depend>laser-geometry</build_depend>
   <exec_depend>laser-geometry</exec_depend>
-    <build_depend>message_generation</build_depend>
+  <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
   
   <!-- The export tag contains other, unspecified, tags -->
