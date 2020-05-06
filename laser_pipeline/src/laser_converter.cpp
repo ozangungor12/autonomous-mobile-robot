@@ -20,8 +20,6 @@ class LaserConverter
 
         void laserCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
         {   
-            laser_geometry::LaserProjection projector;
-            sensor_msgs::PointCloud2 ros_cloud;
             projector.projectLaser(*scan, ros_cloud);
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
             pcl::fromROSMsg(ros_cloud, *cloud);
@@ -32,6 +30,8 @@ class LaserConverter
         ros::NodeHandle nh;
         ros::Subscriber laser_sub;
         ros::Publisher cloud_pub;
+        laser_geometry::LaserProjection projector;
+        sensor_msgs::PointCloud2 ros_cloud;
 };
 
 int main(int argc, char **argv)
