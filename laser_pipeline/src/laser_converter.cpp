@@ -20,17 +20,13 @@ class LaserConverter
 
         void laserCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
         {   
-            // Convert laser scan to ROS msg
+            // Convert laser scan to PointCloud
             laser_geometry::LaserProjection projector;
-            sensor_msgs::PointCloud2 ros_cloud;
-            projector.projectLaser(*scan, ros_cloud);
-            
-            // Create PointCloud from ROS msg
-            pcl::PointCloud<pcl::PointXYZ>::Ptr raw_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-            pcl::fromROSMsg(ros_cloud, *raw_cloud);
+            sensor_msgs::PointCloud2 cloud;
+            projector.projectLaser(*scan, cloud);
             
             // Publish raw PointCloud
-            cloud_pub.publish(raw_cloud);
+            cloud_pub.publish(cloud);
         }
 
     private:
