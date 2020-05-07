@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="laser_pipeline" type="laser_converter" name="laser_converter" output="screen"/>
+</launch>
