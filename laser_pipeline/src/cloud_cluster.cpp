@@ -133,11 +133,8 @@ class CloudCluster
                 ++cluster_count;
             }
 
-            if (publish_markers)
-            {
-                markers_pub.publish(markerArray);
-            }
-            
+            if (publish_markers) markers_pub.publish(markerArray);
+
             return *clustered_cloud;
             // cluster_pub.publish(clustered_cloud);
         
