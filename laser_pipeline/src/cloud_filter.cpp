@@ -25,7 +25,7 @@ class CloudFilter
             *filtered_cloud = *msg;
             
             // Apply filter
-            filterPointCloud(filtered_cloud, "x", 1.0);
+            filterPointCloud(filtered_cloud, "x", 3.0);
 
             // Publish filtered cloud
             cloud_pub.publish(filtered_cloud);
