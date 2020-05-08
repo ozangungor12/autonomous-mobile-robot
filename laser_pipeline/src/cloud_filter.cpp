@@ -22,7 +22,7 @@ class CloudFilter
             *filtered_cloud = *msg;
             
             // Apply filter
-            filterPointCloud(filtered_cloud, "x", X_THRESHOLD);
+            // filterPointCloud(filtered_cloud, "x", X_THRESHOLD);
 
             // Publish filtered cloud
             cloud_pub.publish(filtered_cloud);
@@ -32,7 +32,7 @@ class CloudFilter
         ros::NodeHandle nh;
         ros::Subscriber cloud_sub;
         ros::Publisher cloud_pub;
-        const float X_THRESHOLD = 5.0;
+        const float X_THRESHOLD = 0.0;
         const float Y_THRESHOLD = 0.0;
         const float Z_THRESHOLD = 0.0;
         

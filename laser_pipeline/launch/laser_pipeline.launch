@@ -1,3 +1,5 @@
 <launch>
   <node pkg="laser_pipeline" type="laser_converter" name="laser_converter" output="screen"/>
+  <node pkg="laser_pipeline" type="cloud_filter" name="cloud_filter" output="screen"/>
+  <node pkg="laser_pipeline" type="cloud_cluster" name="cloud_cluster" output="screen"/>
 </launch>

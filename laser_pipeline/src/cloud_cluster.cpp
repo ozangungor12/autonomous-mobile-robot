@@ -21,7 +21,7 @@ class CloudCluster
         CloudCluster()
         {
             // Create a subscriber that waits for chatter topic and executes callback function
-            cloud_sub = nh.subscribe("/raw_cloud", 1, &CloudCluster::cloudCallback, this);
+            cloud_sub = nh.subscribe("/filtered_cloud", 1, &CloudCluster::cloudCallback, this);
             // PointCloud publisher
             cluster_pub = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>("/clustered_cloud", 1);
             // MarkerArray publisher
