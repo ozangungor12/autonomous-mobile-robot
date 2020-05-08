@@ -35,7 +35,7 @@ class CloudFilter
         ros::NodeHandle nh;
         ros::Subscriber cloud_sub;
         ros::Publisher cloud_pub;
-        const float X_THRESHOLD = 3.0;
+        const float X_THRESHOLD = 5.0;
         const float Y_THRESHOLD = 0.0;
         const float Z_THRESHOLD = 0.0;
         
