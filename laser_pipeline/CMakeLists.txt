@@ -209,3 +209,6 @@ include_directories(
 
 add_executable(laser_converter src/laser_converter.cpp)
 target_link_libraries(laser_converter ${catkin_LIBRARIES})
+
+add_executable(cloud_filter src/cloud_filter.cpp)
+target_link_libraries(cloud_filter ${catkin_LIBRARIES})
