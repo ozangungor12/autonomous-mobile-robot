@@ -212,3 +212,6 @@ target_link_libraries(laser_converter ${catkin_LIBRARIES})
 
 add_executable(cloud_filter src/cloud_filter.cpp)
 target_link_libraries(cloud_filter ${catkin_LIBRARIES})
+
+add_executable(cloud_cluster src/cloud_cluster.cpp)
+target_link_libraries(cloud_cluster ${catkin_LIBRARIES})
