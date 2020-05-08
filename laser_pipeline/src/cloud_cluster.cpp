@@ -4,6 +4,7 @@
 #include <pcl/point_types.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include "pcl_ros/point_cloud.h"
 // Segmentation specific includes
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree.h>
@@ -20,7 +21,7 @@ class CloudCluster
         CloudCluster()
         {
             // Create a subscriber that waits for chatter topic and executes callback function
-            cloud_sub = nh.subscribe("/filtered_cloud", 1, &CloudCluster::cloudCallback, this);
+            cloud_sub = nh.subscribe("/raw_cloud", 1, &CloudCluster::cloudCallback, this);
             // PointCloud publisher
             cluster_pub = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>("/clustered_cloud", 1);
         }
@@ -32,6 +33,7 @@ class CloudCluster
             *filtered_cloud = *msg;
 
             // Call euclidean clustering
+            euclideanClustering(filtered_cloud);
 
             // Call pcd_write
         }
@@ -40,6 +42,60 @@ class CloudCluster
         ros::NodeHandle nh;
         ros::Subscriber cloud_sub;
         ros::Publisher cluster_pub;
-        
+        void euclideanClustering(pcl::PointCloud<pcl::PointXYZ>::Ptr& input_cloud)
+        {   
+            // Clustered cloud to be created by the method
+            pcl::PointCloud<pcl::PointXYZ>::Ptr clustered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+            
+            // Creating the KdTree object for the search method of the extraction
+            pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+            tree->setInputCloud (input_cloud);
 
+            // Set Euclidean Clustering parameters
+            std::vector<pcl::PointIndices> cluster_indices;
+            pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+            ec.setClusterTolerance (0.08); // 8 cm
+            ec.setMinClusterSize (3);      // min 3 points
+            ec.setMaxClusterSize (250);    // min 250 points
+            ec.setSearchMethod (tree);
+            ec.setInputCloud (input_cloud);
+            ec.extract (cluster_indices);
+            std::vector<pcl::PointIndices>::const_iterator it;
+            std::vector<int>::const_iterator pit;
+
+            int cluster_count = 0;
+            for(it = cluster_indices.begin(); it != cluster_indices.end(); ++it) 
+            {   
+                pcl::PointCloud<pcl::PointXYZ>::Ptr single_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+                for(pit = it->indices.begin(); pit != it->indices.end(); pit++) 
+                {
+                    // Push_back adds a point to the end of the existing vector
+                    single_cluster->points.push_back(input_cloud->points[*pit]); 
+                }
+
+                single_cluster->width = single_cluster->points.size ();
+                single_cluster->height = 1;
+                single_cluster->is_dense = true;
+
+                // Merge current clusters to a single PointCloud to publish
+                *clustered_cloud += *single_cluster;
+
+                // Increase the cluster counter
+                ++cluster_count;
+            }
+            
+            clustered_cloud->header.frame_id = "/base_scan";
+            cluster_pub.publish(clustered_cloud);
+        
+        }
 };
+
+int main(int argc, char **argv)
+{
+  //Initiate ROS
+  ros::init(argc, argv, "cloud_cluster");
+  //Create an object of class SubscribeAndPublish that will take care of everything
+  CloudCluster cloud_cluster;
+  ros::spin();
+  return 0;
+}
