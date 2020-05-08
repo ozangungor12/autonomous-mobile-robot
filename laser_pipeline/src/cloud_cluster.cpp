@@ -31,18 +31,24 @@ class CloudCluster
             // Read incoming cloud
             pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
             *filtered_cloud = *msg;
-
+            
             // Call euclidean clustering
-            euclideanClustering(filtered_cloud);
-
-            // Call pcd_write
+            pcl::PointCloud<pcl::PointXYZ> clustered_cloud;
+            clustered_cloud = euclideanClustering(filtered_cloud);
+            
+            // Publish clustered_cloud
+            cluster_pub.publish(clustered_cloud);
         }
 
     private:
         ros::NodeHandle nh;
         ros::Subscriber cloud_sub;
         ros::Publisher cluster_pub;
-        void euclideanClustering(pcl::PointCloud<pcl::PointXYZ>::Ptr& input_cloud)
+        const int MIN_CLUSTER_SIZE = 3;
+        const int MAX_CLUSTER_SIZE= 250;
+        const float CLUSTER_TOLERANCE = 0.08;
+        
+        pcl::PointCloud<pcl::PointXYZ> euclideanClustering(pcl::PointCloud<pcl::PointXYZ>::Ptr& input_cloud)
         {   
             // Clustered cloud to be created by the method
             pcl::PointCloud<pcl::PointXYZ>::Ptr clustered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -54,9 +60,9 @@ class CloudCluster
             // Set Euclidean Clustering parameters
             std::vector<pcl::PointIndices> cluster_indices;
             pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-            ec.setClusterTolerance (0.08); // 8 cm
-            ec.setMinClusterSize (3);      // min 3 points
-            ec.setMaxClusterSize (250);    // min 250 points
+            ec.setClusterTolerance (CLUSTER_TOLERANCE); // 8 cm
+            ec.setMinClusterSize (MIN_CLUSTER_SIZE);      // min 3 points
+            ec.setMaxClusterSize (MAX_CLUSTER_SIZE);    // min 250 points
             ec.setSearchMethod (tree);
             ec.setInputCloud (input_cloud);
             ec.extract (cluster_indices);
@@ -85,7 +91,8 @@ class CloudCluster
             }
             
             clustered_cloud->header.frame_id = "/base_scan";
-            cluster_pub.publish(clustered_cloud);
+            return *clustered_cloud;
+            // cluster_pub.publish(clustered_cloud);
         
         }
 };
