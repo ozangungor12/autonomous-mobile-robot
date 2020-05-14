@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="detection_pipeline" type="capture_cam" name="capture_cam" output="screen"/>
+</launch>
