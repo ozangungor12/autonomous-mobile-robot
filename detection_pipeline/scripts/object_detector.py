@@ -33,19 +33,27 @@ class ObjectDetector():
         # Log image size
         # rospy.loginfo("width: {0}, height: {1}".format(width,height))
         
+        detected_cv_img = self.get_detections(cv_img)
+
+        # Print the detection
+        # rospy.loginfo(detections)
+
+        # Display the received img from the publisher'''
+        cv2.imshow('window', detected_cv_img)
+        cv2.waitKey(1)    
+
+    def get_detections(self, cv_img):
         # Convert opencv_image to grpc_msg
         _, img_jpg = cv2.imencode('.jpg', cv_img)
         grpc_msg = darknet_detection_pb2.Image(data = img_jpg.tostring())
         
         # Send a request the server for detection results
-        detection = self.stub.darknetDetection(grpc_msg)
-
-        # Print the detection
-        rospy.loginfo(detection)
-
-        # Display the received img from the publisher'''
-        # cv2.imshow('window', cv_img)
-        # cv2.waitKey(1)    
+        detections = self.stub.darknetDetection(grpc_msg)
+        for box in detections.objects:
+            cv2.rectangle(cv_img, (box.xmin, box.ymin), (box.xmax, box.ymax), (0, 255, 0), 3)
+            cv2.putText(cv_img, box.label, (box.xmin + 5 , box.ymin - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
+        
+        return cv_img
 
 if __name__ == "__main__":
     try:
