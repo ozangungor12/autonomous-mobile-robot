@@ -20,23 +20,32 @@ class ObjectDetector():
     '''
     
     def __init__(self):
-        # rospy.init_node("object_detector")
         rospy.Subscriber("raw_image", Image, self.callback)
         self.cv_bridge = CvBridge()
-        # rospy.spin()
-        
-    # Callback method to subscribe to images via topic raw_image
+        self.darknet_channel = grpc.insecure_channel("localhost:50053")
+        self.stub =  darknet_detection_pb2_grpc.DarknetDetectionStub(self.darknet_channel)
+
     def callback(self, msg):
         # Read incoming image
         cv_img = self.cv_bridge.imgmsg_to_cv2(msg, "bgr8")
         (width, height, _) = cv_img.shape
         
-        # log the messages
-        rospy.loginfo("width: {0}, height: {1}".format(width,height))
+        # Log image size
+        # rospy.loginfo("width: {0}, height: {1}".format(width,height))
         
+        # Convert opencv_image to grpc_msg
+        _, img_jpg = cv2.imencode('.jpg', cv_img)
+        grpc_msg = darknet_detection_pb2.Image(data = img_jpg.tostring())
+        
+        # Send a request the server for detection results
+        detection = self.stub.darknetDetection(grpc_msg)
+
+        # Print the detection
+        rospy.loginfo(detection)
+
         # Display the received img from the publisher'''
-        cv2.imshow('window', cv_img)
-        cv2.waitKey(1)    
+        # cv2.imshow('window', cv_img)
+        # cv2.waitKey(1)    
 
 if __name__ == "__main__":
     try:
