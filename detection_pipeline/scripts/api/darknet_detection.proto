@@ -1,0 +1,27 @@
+syntax = "proto3";
+package darknet_detection;
+
+message Image {
+    int64 nanoseconds = 1;
+    int32 width = 2;
+    int32 height = 3;
+    bytes data = 4;
+    Detection detections = 5;
+}
+
+message Object {
+    string label = 1;
+    float probability = 2;
+    int32 xmin = 3;
+    int32 ymin = 4;
+    int32 xmax = 5;
+    int32 ymax = 6;
+}
+
+message Detection {
+    repeated Object objects = 1;
+}
+
+service DarknetDetection{
+    rpc darknetDetection(Image) returns (Detection) {}
+}
