@@ -3,6 +3,10 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
+# import the grpc files
+import grpc
+from api import darknet_detection_pb2_grpc
+from api import darknet_detection_pb2
 
 class ObjectDetector():
     ''' 
@@ -16,10 +20,10 @@ class ObjectDetector():
     '''
     
     def __init__(self):
-        rospy.init_node("object_detector")
+        # rospy.init_node("object_detector")
         rospy.Subscriber("raw_image", Image, self.callback)
         self.cv_bridge = CvBridge()
-        rospy.spin()
+        # rospy.spin()
         
     # Callback method to subscribe to images via topic raw_image
     def callback(self, msg):
@@ -36,6 +40,8 @@ class ObjectDetector():
 
 if __name__ == "__main__":
     try:
+        rospy.init_node("object_detector")
         ObjectDetector()
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass
