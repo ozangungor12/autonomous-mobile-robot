@@ -10,17 +10,18 @@ from api import darknet_detection_pb2
 
 class ObjectDetector():
     ''' 
-    ObjectDetector class works as a bridge between
-    ROS and gRPC frameworks. It subscribes by ROS to camera images
-    and sends them to darknet container via gRPC. The detection results
-    are published as Bounding Boxes.
+    ObjectDetector class works as a bridge between ROS and gRPC.
+    It subscribes by ROS to camera images and sends them to darknet 
+    container via gRPC. The final image with detection Bboxes are
+    published with detection topic.
 
     Subscribes: Image (raw_image)
-    Publishes: BBox (detections)
+    Publishes: Image with BBoxes (detection)
     '''
     
     def __init__(self):
         rospy.Subscriber("raw_image", Image, self.callback)
+        self.img_publisher = rospy.Publisher("detection", Image, queue_size=1)
         self.cv_bridge = CvBridge()
         self.darknet_channel = grpc.insecure_channel("localhost:50053")
         self.stub =  darknet_detection_pb2_grpc.DarknetDetectionStub(self.darknet_channel)
@@ -33,14 +34,17 @@ class ObjectDetector():
         # Log image size
         # rospy.loginfo("width: {0}, height: {1}".format(width,height))
         
-        detected_cv_img = self.get_detections(cv_img)
+        detection = self.get_detections(cv_img)
 
         # Print the detection
         # rospy.loginfo(detections)
 
         # Display the received img from the publisher'''
-        cv2.imshow('window', detected_cv_img)
-        cv2.waitKey(1)    
+        # cv2.imshow('window', detected_cv_img)
+        # cv2.waitKey(1)
+
+        # Publish the final image with Bboxes
+        self.img_publisher.publish(self.cv_bridge.cv2_to_imgmsg(detection, "bgr8"))
 
     def get_detections(self, cv_img):
         # Convert opencv_image to grpc_msg
