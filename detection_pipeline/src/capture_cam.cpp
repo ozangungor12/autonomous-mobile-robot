@@ -15,12 +15,16 @@ class CaptureCam
     private:
         ros::NodeHandle nh;
         image_transport::Publisher image_pub;
-        
+        int frameCounter = 0;
+
         // Method to capture frames from camera
         void stream(){
             
             // Set video source
             cv::VideoCapture cap(0);
+            
+            std::time_t timeBegin = std::time(0);
+            int tick = 0;
             // Check if video device can be opened with the given index
             cv::Mat frame;
             sensor_msgs::ImagePtr msg;
@@ -29,9 +33,18 @@ class CaptureCam
                 cap >> frame;
                 // Check if grabbed frame is actually full with some content
                 if(!frame.empty()) {
-                msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
-                image_pub.publish(msg);
-                cv::waitKey(1);
+                    msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+                    image_pub.publish(msg);
+                    cv::waitKey(1);
+                
+                    frameCounter++;
+                    std::time_t timeNow = std::time(0) - timeBegin;
+
+                    if (timeNow - tick >= 1){
+                        tick++;
+                        std::cout << "Frames per second: " << frameCounter << std::endl;
+                        frameCounter = 0;
+                    }
                 }
             }
         }
