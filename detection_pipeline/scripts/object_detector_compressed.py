@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from sensor_msgs.msg import Image, CompressedImage
-from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import CompressedImage
+
 import numpy as np
 import cv2
 # import the grpc files
@@ -24,8 +24,6 @@ class ObjectDetector():
         
         rospy.Subscriber("raw_image/compressed", CompressedImage, self.callback, queue_size = 1, buff_size=52428800)
         self.img_publisher_comp = rospy.Publisher("detection/compressed", CompressedImage, queue_size = 1)
-        self.img_publisher = rospy.Publisher("detection", Image, queue_size = 1)
-        self.cv_bridge = CvBridge()
         self.darknet_channel = grpc.insecure_channel("localhost:50053")
         self.stub =  darknet_detection_pb2_grpc.DarknetDetectionStub(self.darknet_channel)
 
@@ -52,9 +50,6 @@ class ObjectDetector():
         
         # Publish new image
         self.img_publisher_comp.publish(msg)
-        # self.img_publisher_comp.publish(detection)
-
-        # self.img_publisher.publish(self.cv_bridge.cv2_to_imgmsg(detection, "bgr8"))
 
     def get_detections(self, cv_img):
         # Convert opencv_image to grpc_msg
