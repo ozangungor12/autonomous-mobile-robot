@@ -8,8 +8,8 @@ import sys, time
 class CompressedSubscriber():
     ''' initialize and configure the subscriber node '''
     def __init__(self):
-        self.image_pub = rospy.Publisher("/detections/compressed", CompressedImage, queue_size=1)
-        rospy.Subscriber("/raw_image/compressed", CompressedImage, self.callback, queue_size=1)
+        self.image_pub = rospy.Publisher("/detection/compressed", CompressedImage, queue_size=1)
+        rospy.Subscriber("/raw_image/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
         
     ''' callback method to run when msg arrives from the publisher '''
     def callback(self, msg):
@@ -27,7 +27,7 @@ class CompressedSubscriber():
  
 def main(args):
     '''Initializes and cleanup ros node'''
-    rospy.init_node('compressed_subscriber', anonymous=True)
+    rospy.init_node('compressed_subscriber')
     try:
         CompressedSubscriber()
         rospy.spin()
