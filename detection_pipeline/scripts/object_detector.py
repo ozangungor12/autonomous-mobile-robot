@@ -20,7 +20,7 @@ class ObjectDetector():
     '''
     
     def __init__(self):
-        rospy.Subscriber("raw_image", Image, self.callback)
+        rospy.Subscriber("raw_image", Image, self.callback, queue_size=1, buff_size=52428800)
         self.img_publisher = rospy.Publisher("detection", Image, queue_size=1)
         self.cv_bridge = CvBridge()
         self.darknet_channel = grpc.insecure_channel("localhost:50053")
