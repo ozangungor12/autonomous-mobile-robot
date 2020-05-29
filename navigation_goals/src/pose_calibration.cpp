@@ -6,6 +6,7 @@ class PoseCalibration
     public:
         PoseCalibration(){
             initial_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/initialpose", 10);
+            publishInitialPose();
         }
     
     private:
@@ -13,10 +14,11 @@ class PoseCalibration
         ros::Publisher initial_pose_pub;
         
         void publishInitialPose(){
+            ros::Duration(3.0).sleep();
             geometry_msgs::PoseWithCovarianceStamped initialPose;
             initialPose.header.frame_id = "map";
-            initialPose.pose.pose.position.x = -1.975;
-            initialPose.pose.pose.position.y = -0.540;
+            initialPose.pose.pose.position.x = -2.10;
+            initialPose.pose.pose.position.y = -0.50;
             initialPose.pose.pose.position.z = 0.0;
             initialPose.pose.pose.orientation.x = initialPose.pose.pose.orientation.y = initialPose.pose.pose.orientation.z = 0.0;
             initialPose.pose.pose.orientation.w = 1.0;
@@ -30,8 +32,6 @@ class PoseCalibration
         
         }
 };
-
-
 
 int main(int argc, char **argv)
 {
