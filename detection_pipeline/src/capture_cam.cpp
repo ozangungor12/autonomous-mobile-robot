@@ -21,9 +21,9 @@ class CaptureCam
         void stream(){
             
             // Set video source
-            cv::VideoCapture cap(0);
-            cap.set(CV_CAP_PROP_FRAME_WIDTH,1280);
-            cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
+            cv::VideoCapture cap(6);
+            cap.set(CV_CAP_PROP_FRAME_WIDTH,10000);
+            cap.set(CV_CAP_PROP_FRAME_HEIGHT,10000);
             
             std::time_t timeBegin = std::time(0);
             int tick = 0;
@@ -45,6 +45,8 @@ class CaptureCam
                     if (timeNow - tick >= 1){
                         tick++;
                         std::cout << "Frames per second: " << frameCounter << std::endl;
+                        std::cout << "Width : " << frame.size().width << std::endl;
+                        std::cout << "Height: " << frame.size().height << std::endl;
                         frameCounter = 0;
                     }
                 }
