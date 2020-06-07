@@ -22,7 +22,7 @@ class ObjectDetector():
     
     def __init__(self):
         
-        rospy.Subscriber("raw_image/compressed", CompressedImage, self.callback, queue_size = 1, buff_size=52428800)
+        rospy.Subscriber("image_raw/compressed", CompressedImage, self.callback, queue_size = 1, buff_size=52428800)
         self.img_publisher_comp = rospy.Publisher("detection/compressed", CompressedImage, queue_size = 1)
         self.darknet_channel = grpc.insecure_channel("localhost:50053")
         self.stub =  darknet_detection_pb2_grpc.DarknetDetectionStub(self.darknet_channel)
