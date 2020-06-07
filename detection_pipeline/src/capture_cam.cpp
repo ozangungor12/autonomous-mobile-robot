@@ -8,7 +8,7 @@ class CaptureCam
     public:
         CaptureCam(){
             image_transport::ImageTransport it(nh);
-            image_pub = it.advertise("raw_image",1);
+            image_pub = it.advertise("image_raw",1);
             stream();
         }
 
@@ -21,7 +21,7 @@ class CaptureCam
         void stream(){
             
             // Set video source
-            cv::VideoCapture cap(6);
+            cv::VideoCapture cap(0);
             cap.set(CV_CAP_PROP_FRAME_WIDTH,10000);
             cap.set(CV_CAP_PROP_FRAME_HEIGHT,10000);
             
