@@ -20,7 +20,7 @@ class ObjectDetector():
     '''
     
     def __init__(self):
-        rospy.Subscriber("raw_image", Image, self.callback, queue_size=1, buff_size=52428800)
+        rospy.Subscriber("image_raw", Image, self.callback, queue_size=1, buff_size=52428800)
         self.img_publisher = rospy.Publisher("detection", Image, queue_size=1)
         self.cv_bridge = CvBridge()
         self.darknet_channel = grpc.insecure_channel("localhost:50053")
@@ -29,15 +29,16 @@ class ObjectDetector():
     def callback(self, msg):
         # Read incoming image
         cv_img = self.cv_bridge.imgmsg_to_cv2(msg, "bgr8")
-        (width, height, _) = cv_img.shape
+        #(width, height, _) = cv_img.shape
         
         # Log image size
         # rospy.loginfo("width: {0}, height: {1}".format(width,height))
-        
+                  
         detection = self.get_detections(cv_img)
-
+        rospy.loginfo("Received detection results")
+        
         # Print the detection
-        # rospy.loginfo(detections)
+        #rospy.loginfo(detection)
 
         # Display the received img from the publisher'''
         # cv2.imshow('window', detected_cv_img)
