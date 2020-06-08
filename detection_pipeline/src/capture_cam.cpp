@@ -22,8 +22,8 @@ class CaptureCam
             
             // Set video source
             cv::VideoCapture cap(0);
-            cap.set(CV_CAP_PROP_FRAME_WIDTH,10000);
-            cap.set(CV_CAP_PROP_FRAME_HEIGHT,10000);
+            cap.set(CV_CAP_PROP_FRAME_WIDTH,1280);
+            cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
             
             std::time_t timeBegin = std::time(0);
             int tick = 0;
