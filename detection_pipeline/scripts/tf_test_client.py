@@ -16,12 +16,12 @@ class TestClient():
     def __init__(self):
         # Init ROS pubs and subs
         rospy.Subscriber("image_raw", Image, self.callback, queue_size=1, buff_size=52428800)
-        self.img_publisher = rospy.Publisher("test_detection_tf2", Image, queue_size=1)
+        self.img_publisher = rospy.Publisher("test_detection_tf", Image, queue_size=1)
         self.cv_bridge = CvBridge()
         
         # Create stubs 
-        self.tf2_channel = grpc.insecure_channel("localhost:50054")
-        self.tf2_stub =  object_detection_pb2_grpc.ObjectDetectionStub(self.tf2_channel)  
+        self.tf_channel = grpc.insecure_channel("localhost:50055")
+        self.tf_stub =  object_detection_pb2_grpc.ObjectDetectionStub(self.tf_channel)  
         
     def callback(self, msg):
         # Read incoming image
@@ -30,7 +30,7 @@ class TestClient():
         grpc_msg = object_detection_pb2.Image(data = img_jpg.tostring())
         
         # Connect to test server
-        test_detections = self.tf2_stub.objectDetection(grpc_msg)
+        test_detections = self.tf_stub.objectDetection(grpc_msg)
 
         # Display the test BBox
         for box in test_detections.objects:
@@ -42,7 +42,7 @@ class TestClient():
 
 if __name__ == "__main__":
     try:
-        rospy.init_node("test_client_tf2")
+        rospy.init_node("test_client_tf")
         TestClient()
         rospy.spin()
     except rospy.ROSInterruptException:
