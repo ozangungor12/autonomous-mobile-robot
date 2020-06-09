@@ -33,7 +33,7 @@ class TestClient():
         # Read incoming compressed image
         np_arr = np.fromstring(msg.data, np.uint8)
         cv_img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) 
-        print("Received image with shape: ", cv_img.shape)
+        rospy.loginfo("Received image with shape: ", cv_img.shape)
         
         # Convert images to grpc msg
         _, img_jpg = cv2.imencode('.jpg', cv_img)
@@ -41,7 +41,8 @@ class TestClient():
         
         # Connect to test server
         test_detections = self.tf2_stub.objectDetection(grpc_msg)
-
+        rospy.loginfo("Received detections from tf2")
+        
         # Display the BBox
         for box in test_detections.objects:
             cv2.rectangle(cv_img, (box.xmin, box.ymin), (box.xmax, box.ymax), (0, 255, 0), 3)
