@@ -9,17 +9,18 @@ import numpy as np
 from api import object_detection_pb2_grpc
 from api import object_detection_pb2
 
-class TestClient():
+class DetectionTensorflow2():
     ''' 
-        Test client for tensorflow2 grpc connection
+        Client to receive detections from tensorflow2 grpc service
     '''
     
     def __init__(self):
         # Init ROS pubs and subs
         # rospy.Subscriber("image_raw", Image, self.callback, queue_size=1, buff_size=52428800)
-        rospy.Subscriber("cv_camera/image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
+        rospy.Subscriber("image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
+        # rospy.Subscriber("cv_camera/image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
         # rospy.Subscriber("raspicam_node/image/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
-        self.img_publisher = rospy.Publisher("test_detection_tf2", Image, queue_size=1)
+        self.img_publisher = rospy.Publisher("detection", Image, queue_size=1)
         self.cv_bridge = CvBridge()
         
         # Create stubs 
@@ -33,18 +34,18 @@ class TestClient():
         # Read incoming compressed image
         np_arr = np.fromstring(msg.data, np.uint8)
         cv_img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) 
-        rospy.loginfo("Received image with shape: ", cv_img.shape)
+        print("Received image with shape: ", cv_img.shape)
         
         # Convert images to grpc msg
         _, img_jpg = cv2.imencode('.jpg', cv_img)
         grpc_msg = object_detection_pb2.Image(data = img_jpg.tostring())
         
-        # Connect to test server
-        test_detections = self.tf2_stub.objectDetection(grpc_msg)
+        # Connect to tensorflow2 server
+        detections = self.tf2_stub.objectDetection(grpc_msg)
         rospy.loginfo("Received detections from tf2")
         
-        # Display the BBox
-        for box in test_detections.objects:
+        # Display the BBoxes
+        for box in detections.objects:
             cv2.rectangle(cv_img, (box.xmin, box.ymin), (box.xmax, box.ymax), (0, 255, 0), 3)
             cv2.putText(cv_img, box.label, (box.xmin + 5 , box.ymin - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
 
@@ -53,8 +54,8 @@ class TestClient():
 
 if __name__ == "__main__":
     try:
-        rospy.init_node("test_client_tf2")
-        TestClient()
+        rospy.init_node("Detection_Tensorflow2")
+        DetectionTensorflow2()
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
