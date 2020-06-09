@@ -54,7 +54,7 @@ class DetectionTensorflow2():
 
 if __name__ == "__main__":
     try:
-        rospy.init_node("Detection_Tensorflow2")
+        rospy.init_node("Detector_Tensorflow2")
         DetectionTensorflow2()
         rospy.spin()
     except rospy.ROSInterruptException:
