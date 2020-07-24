@@ -23,14 +23,14 @@ class DetectorDarknet():
     def __init__(self):
         # Init ROS pubs and subs
         # rospy.Subscriber("image_raw", Image, self.callback, queue_size=1, buff_size=52428800)
-        rospy.Subscriber("image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
+        # rospy.Subscriber("image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
         # rospy.Subscriber("cv_camera/image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
-        # rospy.Subscriber("raspicam_node/image/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
+        rospy.Subscriber("raspicam_node/image/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
         self.img_publisher = rospy.Publisher("detection", Image, queue_size=1)
         self.cv_bridge = CvBridge()
         
         # Darknet stubs
-        self.darknet_channel = grpc.insecure_channel("localhost:50053")
+        self.darknet_channel = grpc.insecure_channel("localhost:50054")
         self.darknet_stub =  darknet_detection_pb2_grpc.DarknetDetectionStub(self.darknet_channel) 
     
     def callback(self, msg):
@@ -52,7 +52,7 @@ class DetectorDarknet():
         
         for box in detections.objects:
             cv2.rectangle(cv_img, (box.xmin, box.ymin), (box.xmax, box.ymax), (0, 255, 0), 3)
-            cv2.putText(cv_img, box.label, (box.xmin + 5 , box.ymin - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
+            cv2.putText(cv_img, box.label, (box.xmin + 5 , box.ymin - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1, cv2.LINE_AA)
 
         # Publish the final image with BBoxes
         self.img_publisher.publish(self.cv_bridge.cv2_to_imgmsg(cv_img, "bgr8"))
