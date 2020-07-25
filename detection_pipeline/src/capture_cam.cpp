@@ -21,7 +21,7 @@ class CaptureCam
         void stream(){
             
             // Set video source
-            cv::VideoCapture cap(0);
+            cv::VideoCapture cap(2);
             cap.set(CV_CAP_PROP_FRAME_WIDTH,1280);
             cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
             
