@@ -50,10 +50,17 @@ class DetectorDarknet():
         detections = self.darknet_stub.darknetDetection(grpc_msg)
         print("Received detections from darknet")
         
+        box_count = 0
         for box in detections.objects:
             cv2.rectangle(cv_img, (box.xmin, box.ymin), (box.xmax, box.ymax), (0, 255, 0), 3)
             cv2.putText(cv_img, box.label, (box.xmin + 5 , box.ymax - 5), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2, cv2.LINE_AA)
+            if box.label == "eurobox":
+                box_count+=1
 
+        text = "Total Number of Boxes in Frame: " + str(box_count)
+        cv2.rectangle(cv_img, (5,10), (480,40), (0,0,0), -1)
+        cv2.putText(cv_img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX , 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        
         # Publish the final image with BBoxes
         self.img_publisher.publish(self.cv_bridge.cv2_to_imgmsg(cv_img, "bgr8"))
 
