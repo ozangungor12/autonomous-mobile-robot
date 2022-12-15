@@ -22,11 +22,11 @@ def movebase_client():
 
     client.send_goal(goal_shelf_1)
     wait = client.wait_for_result()
-    # if not wait:
-    #     rospy.logerr("Action server not available!")
-    #     rospy.signal_shutdown("Action server not available!")
-    # else:
-    #     return client.get_result()
+    if not wait:
+        rospy.logerr("Action server not available!")
+        rospy.signal_shutdown("Action server not available!")
+    else:
+        return client.get_result()
 
     rospy.logerr("Waiting for the next goal")
     time.sleep(3)
