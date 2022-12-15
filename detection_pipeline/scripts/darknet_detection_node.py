@@ -22,9 +22,6 @@ class DetectorDarknet():
     
     def __init__(self):
         # Init ROS pubs and subs
-        # rospy.Subscriber("image_raw", Image, self.callback, queue_size=1, buff_size=52428800)
-        # rospy.Subscriber("image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
-        # rospy.Subscriber("cv_camera/image_raw/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
         rospy.Subscriber("raspicam_node/image/compressed", CompressedImage, self.callback, queue_size=1, buff_size=52428800)
         self.img_publisher = rospy.Publisher("detection", Image, queue_size=1)
         self.cv_bridge = CvBridge()
@@ -34,12 +31,9 @@ class DetectorDarknet():
         self.darknet_stub =  darknet_detection_pb2_grpc.DarknetDetectionStub(self.darknet_channel) 
     
     def callback(self, msg):
-        # Read incoming image
-        # cv_img = self.cv_bridge.imgmsg_to_cv2(msg, "bgr8")
-        
         # Read incoming compressed image
-        np_arr = np.fromstring(msg.data, np.uint8)
-        cv_img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) 
+        cv_img = self.cv_bridge.imgmsg_to_cv2(msg, "bgr8")
+
         print("Received image with shape: ", cv_img.shape)
         
         # Convert incoming image to grpc msg
